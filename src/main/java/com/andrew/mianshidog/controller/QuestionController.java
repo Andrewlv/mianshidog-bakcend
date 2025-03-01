@@ -2,6 +2,7 @@ package com.andrew.mianshidog.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.EntryType;
@@ -17,10 +18,7 @@ import com.andrew.mianshidog.constant.UserConstant;
 import com.andrew.mianshidog.exception.BusinessException;
 import com.andrew.mianshidog.exception.ThrowUtils;
 import com.andrew.mianshidog.manager.CounterManager;
-import com.andrew.mianshidog.model.dto.question.QuestionAddRequest;
-import com.andrew.mianshidog.model.dto.question.QuestionEditRequest;
-import com.andrew.mianshidog.model.dto.question.QuestionQueryRequest;
-import com.andrew.mianshidog.model.dto.question.QuestionUpdateRequest;
+import com.andrew.mianshidog.model.dto.question.*;
 import com.andrew.mianshidog.model.dto.questionbankquestion.QuestionBatchDeleteRequest;
 import com.andrew.mianshidog.model.entity.Question;
 import com.andrew.mianshidog.model.entity.User;
@@ -363,6 +361,27 @@ public class QuestionController {
     public BaseResponse<Boolean> batchDeleteQuestions(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
         questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * AI 生成题目
+     *
+     * @param questionGenerateRequest 请求参数
+     * @param request                 请求
+     * @return 是否生成成功
+     */
+    @PostMapping("/ai/generate/question")
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> aiGenerateQuestions(@RequestBody QuestionAIGenerateRequest questionGenerateRequest, HttpServletRequest request) {
+        String questionType = questionGenerateRequest.getQuestionType();
+        int number = questionGenerateRequest.getNumber();
+        // 校验参数
+        ThrowUtils.throwIf(StrUtil.isBlank(questionType), ErrorCode.PARAMS_ERROR, "题目类型不能为空");
+        ThrowUtils.throwIf(number <= 0, ErrorCode.PARAMS_ERROR, "题目数量必须大于0");
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        questionService.aiGenerateQuestions(questionType, number, loginUser);
         return ResultUtils.success(true);
     }
 }

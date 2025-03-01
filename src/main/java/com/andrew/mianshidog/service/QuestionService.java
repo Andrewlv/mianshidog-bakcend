@@ -5,6 +5,7 @@ import com.andrew.mianshidog.common.ErrorCode;
 import com.andrew.mianshidog.exception.BusinessException;
 import com.andrew.mianshidog.model.dto.post.PostQueryRequest;
 import com.andrew.mianshidog.model.entity.Post;
+import com.andrew.mianshidog.model.entity.User;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -76,5 +77,15 @@ public interface QuestionService extends IService<Question> {
      * @param questionIdList
      */
     void batchDeleteQuestions(List<Long> questionIdList);
+
+    /**
+     * AI生成题目
+     *
+     * @param questionType 题目类型
+     * @param number       题目数量
+     * @param user         用户
+     * @return true：生成成功 false：生成失败
+     */
+    boolean aiGenerateQuestions(String questionType, int number, User user);
 
 }

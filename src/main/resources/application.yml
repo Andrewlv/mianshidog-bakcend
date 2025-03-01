@@ -206,3 +206,6 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.andrew.mianshidog.controller
+# AI 大模型接入
+ai:
+  apiKey: 填入自己的 API Key
